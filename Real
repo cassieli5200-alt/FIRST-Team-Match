@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FIRST Team Match: find the FIRST team that fits yours</title>
+  <meta name="description" content="FIRST Team Match pairs FRC, FTC, and FLL teams as mentors, mentees, and collaborators. Get mentorship, resources, and international exposure. Sign-up is open all season.">
+  <meta property="og:title" content="FIRST Team Match">
+  <meta property="og:description" content="Pairing FRC, FTC, and FLL teams for mentorship, collaboration, and global outreach. 70+ teams, 12 countries, 20 states and counting.">
+  <meta property="og:type" content="website">
+  <meta name="theme-color" content="#0E1F7F">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='24' cy='32' r='20' fill='%234155AD'/%3E%3Ccircle cx='40' cy='32' r='20' fill='%23E98BC5'/%3E%3C/svg%3E">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Public+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --navy: #0E1F7F;
+      --royal: #4155AD;
+      --pink: #E98BC5;
+      --paper: #F1F6FF;
+      --sky: #DCEBFF;
+      --muted: #3E4C85;
+      --line: #C5D4F0;
+      --display: "Bricolage Grotesque", "Helvetica Neue", Arial, sans-serif;
+      --body: "Public Sans", "Helvetica Neue", Arial, sans-serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+    html { scroll-behavior: smooth; scroll-padding-top: 5rem; }
+    body {
+      margin: 0;
+      font-family: var(--body);
+      font-size: 1.0625rem;
+      line-height: 1.65;
+      color: var(--navy);
+      background: var(--paper);
+      -webkit-font-smoothing: antialiased;
+    }
+    h1, h2, h3 { font-family: var(--display); line-height: 1.08; letter-spacing: -0.02em; margin: 0; }
+    p { margin: 0; }
+    a { color: inherit; }
+    :focus-visible { outline: 3px solid var(--royal); outline-offset: 3px; border-radius: 4px; }
+    .perks :focus-visible, footer :focus-visible { outline-color: var(--pink); }
+    .join :focus-visible { outline-color: #fff; }
+
+    .wrap { width: min(1120px, 100% - 3rem); margin-inline: auto; }
+    .skip { position: absolute; left: -999px; top: 0; background: var(--navy); color: #fff; padding: .6rem 1rem; z-index: 100; }
+    .skip:focus { left: 1rem; top: 1rem; }
+
+    /* ---------- Buttons ---------- */
+    .btn {
+      display: inline-block;
+      font-family: var(--body);
+      font-weight: 600;
+      font-size: 1rem;
+      text-decoration: none;
+      padding: .9rem 1.6rem;
+      border-radius: 999px;
+      border: 2px solid transparent;
+      transition: transform .15s ease, background-color .15s ease;
+    }
+    .btn:hover { transform: translateY(-2px); }
+    .btn-primary { background: var(--navy); color: #fff; }
+    .btn-primary:hover { background: var(--royal); }
+    .btn-pink { background: var(--pink); color: var(--navy); }
+    .btn-pink:hover { background: #F2A6D3; }
+    .btn-ghost { border-color: var(--navy); color: var(--navy); }
+    .btn-ghost:hover { background: var(--navy); color: #fff; }
+
+    /* ---------- Nav ---------- */
+    .nav { position: sticky; top: 0; z-index: 50; background: rgba(241, 246, 255, .92); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); }
+    .nav-inner { display: flex; align-items: center; justify-content: space-between; min-height: 4.25rem; gap: 1rem; }
+    .brand { display: flex; align-items: center; gap: .65rem; text-decoration: none; font-family: var(--display); font-weight: 800; font-size: 1.2rem; letter-spacing: -0.02em; }
+    .nav-links { display: flex; align-items: center; gap: 1.6rem; }
+    .nav-links a { text-decoration: none; font-weight: 500; font-size: .98rem; }
+    .nav-links a:not(.btn):hover { text-decoration: underline; text-underline-offset: 6px; text-decoration-thickness: 2px; }
+    .nav-links .btn { padding: .55rem 1.2rem; font-size: .95rem; }
+
+    /* ---------- Hero ---------- */
+    .hero { padding: clamp(3rem, 8vw, 6.5rem) 0 clamp(2.5rem, 6vw, 4.5rem); }
+    .hero-grid { display: grid; grid-template-columns: 1.05fr .95fr; gap: 2.5rem; align-items: center; }
+    .hero h1 { font-size: clamp(2.7rem, 6.2vw, 5rem); font-weight: 800; letter-spacing: -0.035em; line-height: 1; }
+    .hero-sub { margin-top: 1.5rem; font-size: 1.2rem; color: var(--muted); max-width: 34rem; }
+    .hero-cta { margin-top: 2.25rem; display: flex; flex-wrap: wrap; gap: .9rem; }
+
+    .match-art { position: relative; }
+    .match-art svg { width: 100%; height: auto; display: block; overflow: visible; }
+    .circle-a { animation: fromLeft 1s cubic-bezier(.2, .8, .2, 1) both; }
+    .circle-b { animation: fromRight 1s cubic-bezier(.2, .8, .2, 1) both; }
+    .lens { animation: fadeIn .5s ease .85s both; }
+    @keyframes fromLeft { from { transform: translateX(-90px); opacity: 0; } to { transform: none; opacity: 1; } }
+    @keyframes fromRight { from { transform: translateX(90px); opacity: 0; } to { transform: none; opacity: 1; } }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+    .art-label { font-family: var(--display); font-weight: 700; font-size: 22px; }
+    .pill {
+      position: absolute;
+      font-family: var(--display);
+      font-weight: 800;
+      font-size: .95rem;
+      padding: .35rem .85rem;
+      border-radius: 999px;
+      background: #fff;
+      border: 2px solid var(--navy);
+    }
+    .pill-frc { top: 2%; left: 30%; }
+    .pill-ftc { bottom: 4%; left: 6%; }
+    .pill-fll { top: 12%; right: 2%; }
+
+    /* ---------- Stats ---------- */
+    .stats { border-block: 1px solid var(--line); background: #fff; }
+    .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); }
+    .stat { padding: 1.75rem 1.25rem; border-left: 1px solid var(--line); }
+    .stat:first-child { border-left: 0; padding-left: 0; }
+    .stat strong { display: block; font-family: var(--display); font-weight: 800; font-size: clamp(2rem, 4vw, 3rem); letter-spacing: -0.03em; line-height: 1; }
+    .stat span { color: var(--muted); font-size: .98rem; }
+
+    /* ---------- Shared section bits ---------- */
+    .section { padding: clamp(4rem, 9vw, 7rem) 0; }
+    .section-title { font-size: clamp(2rem, 4.4vw, 3.2rem); font-weight: 800; letter-spacing: -0.03em; }
+    .section-lede { margin-top: 1rem; color: var(--muted); max-width: 36rem; }
+
+    /* ---------- Mission ---------- */
+    .mission-grid { display: grid; grid-template-columns: 1.1fr .9fr; gap: clamp(2rem, 6vw, 5rem); align-items: start; }
+    .mission h2 { font-size: clamp(2.3rem, 5.2vw, 4rem); font-weight: 800; letter-spacing: -0.035em; line-height: 1.02; }
+    .mission-copy { display: grid; gap: 1.25rem; color: var(--muted); }
+    .mission-copy p:first-child { color: var(--navy); font-size: 1.2rem; }
+    .roles { margin-top: clamp(2.5rem, 5vw, 4rem); display: grid; grid-template-columns: repeat(3, 1fr); border-top: 2px solid var(--navy); }
+    .role { padding: 1.6rem 1.75rem 0 0; }
+    .role + .role { padding-left: 1.75rem; border-left: 1px solid var(--line); }
+    .role h3 { font-size: 1.45rem; font-weight: 700; margin-bottom: .5rem; }
+    .role p { color: var(--muted); font-size: 1rem; }
+
+    /* ---------- Benefits ---------- */
+    .benefits { background: #fff; border-block: 1px solid var(--line); }
+    .benefits-list { margin-top: 3rem; border-top: 2px solid var(--navy); }
+    .benefit { display: grid; grid-template-columns: 3.5rem 1fr 1.4fr; gap: 1.5rem; align-items: start; padding: 1.9rem 0; border-bottom: 1px solid var(--line); }
+    .dot { width: 2.25rem; height: 2.25rem; border-radius: 50%; margin-top: .15rem; }
+    .dot-royal { background: var(--royal); }
+    .dot-pink { background: var(--pink); }
+    .dot-navy { background: var(--navy); }
+    .benefit h3 { font-size: clamp(1.45rem, 2.6vw, 1.9rem); font-weight: 700; }
+    .benefit p { color: var(--muted); max-width: 32rem; }
+
+    /* ---------- Perks (dark) ---------- */
+    .perks { background: var(--navy); color: #fff; }
+    .perks-grid { display: grid; grid-template-columns: .8fr 1.2fr; gap: clamp(2rem, 6vw, 5rem); align-items: start; }
+    .perks .section-lede { color: #C3CCF0; }
+    .perk { padding: 1.6rem 0; border-top: 1px solid rgba(255, 255, 255, .22); }
+    .perk:first-child { border-top: 3px solid var(--pink); }
+    .perk h3 { font-size: 1.5rem; font-weight: 700; margin-bottom: .45rem; }
+    .perk p { color: #D2D9F3; }
+    .perk b { color: var(--pink); font-weight: 600; }
+
+    /* ---------- How it works ---------- */
+    .steps { list-style: none; margin: 3.25rem 0 0; padding: 0; display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.75rem; position: relative; counter-reset: step; }
+    .steps::before { content: ""; position: absolute; top: 1.6rem; left: 1.6rem; right: 1.6rem; height: 2px; background: var(--line); }
+    .step { position: relative; counter-increment: step; }
+    .step::before {
+      content: counter(step);
+      position: relative;
+      z-index: 1;
+      display: grid;
+      place-items: center;
+      width: 3.2rem;
+      height: 3.2rem;
+      margin-bottom: 1.2rem;
+      border-radius: 50%;
+      background: var(--royal);
+      color: #fff;
+      font-family: var(--display);
+      font-weight: 800;
+      font-size: 1.3rem;
+      box-shadow: 0 0 0 6px var(--paper);
+    }
+    .step:nth-child(even)::before { background: var(--pink); color: var(--navy); }
+    .step h3 { font-size: 1.3rem; font-weight: 700; margin-bottom: .5rem; }
+    .step p { color: var(--muted); font-size: 1rem; }
+
+    .past { margin-top: 2.5rem; display: flex; flex-wrap: wrap; align-items: center; gap: .7rem; }
+    .past strong { font-family: var(--display); font-size: 1.05rem; margin-right: .4rem; }
+    .tag { background: var(--sky); padding: .4rem .95rem; border-radius: 999px; font-size: .95rem; font-weight: 500; }
+
+    /* ---------- Sample match ---------- */
+    .sample { margin-top: 4rem; background: var(--sky); border-radius: 28px; padding: clamp(1.75rem, 4vw, 3rem); display: grid; grid-template-columns: 1fr 1fr; gap: 2.5rem; align-items: center; }
+    .sample h3 { font-size: 1.7rem; font-weight: 800; letter-spacing: -0.02em; }
+    .sample .note { margin-top: .6rem; font-size: .92rem; color: var(--muted); }
+    .picker { margin-top: 1.4rem; display: grid; gap: 1rem; }
+    .picker fieldset { border: 0; padding: 0; margin: 0; }
+    .picker legend { font-weight: 600; font-size: .95rem; margin-bottom: .45rem; padding: 0; }
+    .opts { display: flex; flex-wrap: wrap; gap: .5rem; }
+    .opts input { position: absolute; opacity: 0; pointer-events: none; }
+    .opts label { cursor: pointer; padding: .45rem 1rem; border-radius: 999px; background: #fff; border: 2px solid transparent; font-weight: 500; font-size: .95rem; transition: background-color .15s ease, color .15s ease; }
+    .opts label:hover { border-color: var(--royal); }
+    .opts input:checked + label { background: var(--navy); color: #fff; }
+    .opts input:focus-visible + label { outline: 3px solid var(--royal); outline-offset: 2px; }
+    .result { background: #fff; border-radius: 22px; padding: 2rem; min-height: 14rem; display: flex; flex-direction: column; justify-content: center; gap: 1.1rem; }
+    .result .pair { display: flex; align-items: center; gap: .6rem; font-family: var(--display); font-weight: 800; font-size: 1.05rem; }
+    .result .you, .result .them { padding: .4rem .9rem; border-radius: 999px; }
+    .result .you { background: var(--royal); color: #fff; }
+    .result .them { background: var(--pink); color: var(--navy); }
+    .result .link { flex: 1; height: 2px; background: var(--navy); min-width: 1.5rem; }
+    .result p { font-size: 1.15rem; line-height: 1.5; }
+
+    /* ---------- FAQ ---------- */
+    .faq { background: #fff; border-top: 1px solid var(--line); }
+    .faq-grid { display: grid; grid-template-columns: .8fr 1.2fr; gap: clamp(2rem, 6vw, 5rem); align-items: start; }
+    .faq-list { border-top: 2px solid var(--navy); }
+    .faq-list details { border-bottom: 1px solid var(--line); }
+    .faq-list summary { cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center; gap: 1rem; padding: 1.3rem 0; font-family: var(--display); font-weight: 700; font-size: 1.25rem; }
+    .faq-list summary::-webkit-details-marker { display: none; }
+    .faq-list summary::after { content: "+"; flex: none; width: 2rem; height: 2rem; display: grid; place-items: center; border-radius: 50%; background: var(--sky); font-size: 1.4rem; line-height: 1; transition: transform .2s ease, background-color .2s ease; }
+    .faq-list details[open] summary::after { content: "\2212"; background: var(--pink); }
+    .faq-list details p { padding: 0 3rem 1.4rem 0; color: var(--muted); }
+    .faq-list a { text-underline-offset: 3px; }
+
+    /* ---------- Join ---------- */
+    .join { background: var(--royal); color: #fff; }
+    .join-inner { display: grid; grid-template-columns: 1.3fr .7fr; gap: 2.5rem; align-items: center; }
+    .join h2 { font-size: clamp(2.2rem, 5vw, 3.6rem); font-weight: 800; letter-spacing: -0.03em; }
+    .join p { margin-top: 1rem; color: #E6ECFF; max-width: 32rem; }
+    .join-actions { display: flex; flex-direction: column; align-items: flex-start; gap: 1rem; }
+    .join-actions .btn { font-size: 1.1rem; padding: 1.05rem 2rem; }
+    .join-actions a:not(.btn) { color: #fff; text-underline-offset: 4px; font-weight: 500; }
+
+    /* ---------- Footer ---------- */
+    footer { background: var(--navy); color: #C3CCF0; padding: 2.5rem 0; font-size: .92rem; }
+    .foot { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 1.5rem; }
+    .foot .brand { color: #fff; }
+    .foot a { color: #fff; text-underline-offset: 4px; }
+    .fine { margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid rgba(255, 255, 255, .18); font-size: .85rem; max-width: 52rem; }
+
+    /* ---------- Responsive ---------- */
+    @media (max-width: 900px) {
+      .hero-grid, .perks-grid, .join-inner, .sample, .mission-grid, .faq-grid { grid-template-columns: 1fr; }
+      .match-art { max-width: 480px; }
+      .steps { grid-template-columns: 1fr 1fr; }
+      .steps::before { display: none; }
+      .benefit { grid-template-columns: 3rem 1fr; }
+      .benefit p { grid-column: 2; }
+      .roles { grid-template-columns: 1fr; }
+      .role, .role + .role { padding: 1.4rem 0; border-left: 0; }
+      .role + .role { border-top: 1px solid var(--line); }
+    }
+    @media (max-width: 640px) {
+      .nav-links a:not(.btn) { display: none; }
+      .stats-grid { grid-template-columns: 1fr 1fr; }
+      .stat:nth-child(3) { border-left: 0; padding-left: 0; }
+      .stat:nth-child(n+3) { border-top: 1px solid var(--line); }
+      .steps { grid-template-columns: 1fr; }
+      .faq-list details p { padding-right: 0; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .circle-a, .circle-b, .lens { animation: none; }
+      .btn, .faq-list summary::after { transition: none; }
+      .btn:hover { transform: none; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+
+  <header class="nav">
+    <div class="wrap nav-inner">
+      <a class="brand" href="#top" aria-label="FIRST Team Match, home">
+        <svg width="40" height="28" viewBox="0 0 40 28" aria-hidden="true">
+          <defs><clipPath id="logoClip"><circle cx="14" cy="14" r="13"/></clipPath></defs>
+          <circle cx="14" cy="14" r="13" fill="#4155AD"/>
+          <circle cx="26" cy="14" r="13" fill="#E98BC5"/>
+          <circle cx="26" cy="14" r="13" fill="#0E1F7F" clip-path="url(#logoClip)"/>
+        </svg>
+        FIRST Team Match
+      </a>
+      <nav class="nav-links" aria-label="Main">
+        <a href="#mission">Mission</a>
+        <a href="#benefits">Benefits</a>
+        <a href="#how">How it works</a>
+        <a href="#faq">FAQ</a>
+        <a class="btn btn-primary" href="#join">Join</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+    <!-- HERO -->
+    <section class="hero" id="top">
+      <div class="wrap hero-grid">
+        <div>
+          <h1>Find the FIRST team that fits yours.</h1>
+          <p class="hero-sub">FIRST Team Match pairs FRC, FTC, and FLL teams as mentors, mentees, and collaborators, based on mutual preferences. Join an international community of teams that help each other grow.</p>
+          <div class="hero-cta">
+            <a class="btn btn-primary" href="https://docs.google.com/forms/d/e/1FAIpQLSfrLQP7CMbImfkal5FBY1l_OBFzz4yFlR4jbN34FGbbcmKJgw/viewform?usp=header" target="_blank" rel="noopener">Sign up your team</a>
+            <a class="btn btn-ghost" href="#how">See how it works</a>
+          </div>
+        </div>
+
+        <div class="match-art">
+          <svg viewBox="0 0 520 360" role="img" aria-label="Two overlapping circles, labeled Your team and Your match, joined in the middle">
+            <defs>
+              <clipPath id="clipA"><circle cx="190" cy="180" r="150"/></clipPath>
+            </defs>
+            <g class="circle-a">
+              <circle cx="190" cy="180" r="150" fill="#4155AD"/>
+              <text class="art-label" x="82" y="186" fill="#fff" text-anchor="middle">Your</text>
+              <text class="art-label" x="82" y="212" fill="#fff" text-anchor="middle">team</text>
+            </g>
+            <g class="circle-b">
+              <circle cx="330" cy="180" r="150" fill="#E98BC5"/>
+              <text class="art-label" x="438" y="186" fill="#0E1F7F" text-anchor="middle">Your</text>
+              <text class="art-label" x="438" y="212" fill="#0E1F7F" text-anchor="middle">match</text>
+            </g>
+            <g class="lens">
+              <circle cx="330" cy="180" r="150" fill="#0E1F7F" clip-path="url(#clipA)"/>
+              <circle cx="260" cy="170" r="30" fill="#fff"/>
+              <path d="M246 170 l10 10 l19 -20" fill="none" stroke="#0E1F7F" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+              <text class="art-label" x="260" y="236" fill="#fff" text-anchor="middle" style="font-size:20px">Matched</text>
+            </g>
+          </svg>
+          <span class="pill pill-frc">FRC</span>
+          <span class="pill pill-ftc">FTC</span>
+          <span class="pill pill-fll">FLL</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- STATS -->
+    <section class="stats" aria-label="Program reach">
+      <div class="wrap stats-grid">
+        <div class="stat"><strong>70+</strong><span>teams reached</span></div>
+        <div class="stat"><strong>11</strong><span>countries</span></div>
+        <div class="stat"><strong>17</strong><span>U.S. states</span></div>
+        <div class="stat"><strong>2025</strong><span>year founded</span></div>
+      </div>
+    </section>
+
+    <!-- MISSION -->
+    <section class="section mission" id="mission">
+      <div class="wrap">
+        <div class="mission-grid">
+          <h2>Every team deserves a team in its corner.</h2>
+          <div class="mission-copy">
+            <p>FIRST teams grow in classrooms, libraries, and workshops around the world, and no two have the same resources. FIRST Team Match connects teams across regions, programs, and borders, so experience, tools, and encouragement reach the teams that can use them most.</p>
+            <p>A core goal is getting STEM tools and support to underserved and rural teams. We also believe every team has something to share, whether it’s in its first season or its twentieth.</p>
+          </div>
+        </div>
+
+        <div class="roles">
+          <div class="role">
+            <h3>Teams that want to mentor</h3>
+            <p>Share what you’ve learned about design, code, outreach, and running a team.</p>
+          </div>
+          <div class="role">
+            <h3>Teams that want a mentor</h3>
+            <p>Get guidance on your robot, your presentation, and building a lasting program.</p>
+          </div>
+          <div class="role">
+            <h3>Teams that want peers</h3>
+            <p>Work side by side with a team at your level on hardware, software, or outreach.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- BENEFITS -->
+    <section class="section benefits" id="benefits">
+      <div class="wrap">
+        <h2 class="section-title">What you gain by joining</h2>
+        <div class="benefits-list">
+          <div class="benefit">
+            <span class="dot dot-royal" aria-hidden="true"></span>
+            <h3>Technical growth</h3>
+            <p>Collaborate on hardware and software to solve engineering challenges.</p>
+          </div>
+          <div class="benefit">
+            <span class="dot dot-pink" aria-hidden="true"></span>
+            <h3>Mentorship</h3>
+            <p>Get software, hardware, outreach, and design guidance on robot performance and presentation.</p>
+          </div>
+          <div class="benefit">
+            <span class="dot dot-navy" aria-hidden="true"></span>
+            <h3>Resource equity</h3>
+            <p>Underserved and rural teams get STEM tools and support from teams that can share them.</p>
+          </div>
+          <div class="benefit">
+            <span class="dot dot-royal" aria-hidden="true"></span>
+            <h3>Strategic networking</h3>
+            <p>Expand your community outreach and build connections across regions and FIRST programs.</p>
+          </div>
+          <div class="benefit">
+            <span class="dot dot-pink" aria-hidden="true"></span>
+            <h3>Global pathways</h3>
+            <p>Gain international exposure and support for your FIRST program.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PERKS -->
+    <section class="section perks" id="perks">
+      <div class="wrap perks-grid">
+        <div>
+          <h2 class="section-title">More than a match</h2>
+          <p class="section-lede">Every team in the program gets extra support beyond your partner team.</p>
+        </div>
+        <div>
+          <div class="perk">
+            <h3>Support from award-winning teams</h3>
+            <p>Learn from our <b>1st place Connect Award winner at the FIRST Championship</b> and our <b>Think Award winner at the 2026 Illinois state championships</b>.</p>
+          </div>
+          <div class="perk">
+            <h3>Tech Talks</h3>
+            <p>Join webinars with industry professionals from companies like NASA, Disney, Yelp, and more.</p>
+          </div>
+          <div class="perk">
+            <h3>A private community Discord</h3>
+            <p>Trade ideas and collaborate with every team in the FIRST Team Match community.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- HOW IT WORKS -->
+    <section class="section" id="how">
+      <div class="wrap">
+        <h2 class="section-title">How it works</h2>
+        <p class="section-lede">Four steps from sign-up to your first meeting.</p>
+
+        <ol class="steps">
+          <li class="step">
+            <h3>Sign up</h3>
+            <p>Fill out a short Google form. Tell us whether you want to mentor, be mentored, or collaborate as peers.</p>
+          </li>
+          <li class="step">
+            <h3>Share your preferences</h3>
+            <p>Choose a region, FRC, FTC, or FLL, and focus areas such as CAD, programming, outreach, or fundraising.</p>
+          </li>
+          <li class="step">
+            <h3>Get matched</h3>
+            <p>We pair you with a team or teams that fit your preferences and introduce you by email.</p>
+          </li>
+          <li class="step">
+            <h3>Work together</h3>
+            <p>You decide how. We suggest meeting about once a month, but the commitment is up to you.</p>
+          </li>
+        </ol>
+
+        <div class="past">
+          <strong>Past matches have included:</strong>
+          <span class="tag">Virtual design reviews</span>
+          <span class="tag">Programming help</span>
+          <span class="tag">Shared outreach events</span>
+        </div>
+
+        <div class="sample">
+          <div>
+            <h3>Try a sample preference</h3>
+            <p class="note">An example of how your answers shape a match. Your real match depends on which teams have signed up.</p>
+            <div class="picker">
+              <fieldset>
+                <legend>Your program</legend>
+                <div class="opts">
+                  <input type="radio" name="program" id="p-frc" value="FRC" checked><label for="p-frc">FRC</label>
+                  <input type="radio" name="program" id="p-ftc" value="FTC"><label for="p-ftc">FTC</label>
+                  <input type="radio" name="program" id="p-fll" value="FLL"><label for="p-fll">FLL</label>
+                </div>
+              </fieldset>
+              <fieldset>
+                <legend>What you’re looking for</legend>
+                <div class="opts">
+                  <input type="radio" name="role" id="r-mentee" value="mentee" checked><label for="r-mentee">Be mentored</label>
+                  <input type="radio" name="role" id="r-mentor" value="mentor"><label for="r-mentor">Mentor a team</label>
+                  <input type="radio" name="role" id="r-peer" value="peer"><label for="r-peer">Collaborate as peers</label>
+                </div>
+              </fieldset>
+              <fieldset>
+                <legend>Focus area</legend>
+                <div class="opts">
+                  <input type="radio" name="focus" id="f-cad" value="CAD" checked><label for="f-cad">CAD</label>
+                  <input type="radio" name="focus" id="f-prog" value="programming"><label for="f-prog">Programming</label>
+                  <input type="radio" name="focus" id="f-out" value="outreach"><label for="f-out">Outreach</label>
+                  <input type="radio" name="focus" id="f-fund" value="fundraising"><label for="f-fund">Fundraising</label>
+                </div>
+              </fieldset>
+            </div>
+          </div>
+          <div class="result" aria-live="polite">
+            <div class="pair"><span class="you" id="out-you">Your team</span><span class="link" aria-hidden="true"></span><span class="them" id="out-them">Your match</span></div>
+            <p id="out-text"></p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="section faq" id="faq">
+      <div class="wrap faq-grid">
+        <div>
+          <h2 class="section-title">Common questions</h2>
+          <p class="section-lede">Can’t find your answer? Email us and we’ll help.</p>
+        </div>
+        <div class="faq-list">
+          <details>
+            <summary>Who can join?</summary>
+            <p>FRC, FTC, and FLL teams anywhere in the world can sign up. You can ask for a partner in your own region or in another country.</p>
+          </details>
+          <details>
+            <summary>Can I choose what kind of team I’m matched with?</summary>
+            <p>Yes. The form asks for your preferences, such as region, program (FRC, FTC, or FLL), and focus areas like CAD, programming, outreach, or fundraising. We use them to find the closest fit.</p>
+          </details>
+          <details>
+            <summary>How often will we meet?</summary>
+            <p>We suggest about once a month, but the commitment is up to you and your match.</p>
+          </details>
+          <details>
+            <summary>Can we be matched with more than one team?</summary>
+            <p>Yes. We match you with a team or teams, depending on what you ask for and who has signed up.</p>
+          </details>
+          <details>
+            <summary>When can we sign up?</summary>
+            <p>The form is open all season, so your team can join at any time.</p>
+          </details>
+          <details>
+            <summary>Who runs FIRST Team Match?</summary>
+            <p>The program is organized by the Newton Busters FTC team. You can reach us at <a href="mailto:Newtonbusterssocial@gmail.com">Newtonbusterssocial@gmail.com</a>.</p>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- JOIN -->
+    <section class="section join" id="join">
+      <div class="wrap join-inner">
+        <div>
+          <h2>Sign-up is open all season.</h2>
+          <p>Tell us what your team needs and what it can offer. We’ll find a partner and introduce you by email.</p>
+        </div>
+        <div class="join-actions">
+          <a class="btn btn-pink" href="https://docs.google.com/forms/d/e/1FAIpQLSfrLQP7CMbImfkal5FBY1l_OBFzz4yFlR4jbN34FGbbcmKJgw/viewform?usp=header" target="_blank" rel="noopener">Open the sign-up form</a>
+          <span>Questions? <a href="mailto:Newtonbusterssocial@gmail.com">Newtonbusterssocial@gmail.com</a></span>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <div class="foot">
+        <a class="brand" href="#top">
+          <svg width="40" height="28" viewBox="0 0 40 28" aria-hidden="true">
+            <defs><clipPath id="logoClip2"><circle cx="14" cy="14" r="13"/></clipPath></defs>
+            <circle cx="14" cy="14" r="13" fill="#4155AD"/>
+            <circle cx="26" cy="14" r="13" fill="#E98BC5"/>
+            <circle cx="26" cy="14" r="13" fill="#fff" clip-path="url(#logoClip2)"/>
+          </svg>
+          FIRST Team Match
+        </a>
+        <a href="mailto:Newtonbusterssocial@gmail.com">Newtonbusterssocial@gmail.com</a>
+      </div>
+      <p class="fine">Organized by the Newton Busters FTC team. FIRST®, FRC®, FTC®, and FLL® are trademarks of FIRST. FIRST Team Match is an independent program and is not endorsed by FIRST. © <span id="year">2026</span> FIRST Team Match.</p>
+    </div>
+  </footer>
+
+  <script>
+    (function () {
+      var youEl = document.getElementById("out-you");
+      var themEl = document.getElementById("out-them");
+      var textEl = document.getElementById("out-text");
+
+      function val(name) {
+        return document.querySelector('input[name="' + name + '"]:checked').value;
+      }
+
+      function update() {
+        var program = val("program");
+        var role = val("role");
+        var focus = val("focus");
+        var copy = {
+          mentee: {
+            you: program + " team, mentee",
+            them: "Experienced " + program + " team",
+            text: "You’d be matched with an experienced " + program + " team ready to guide you on " + focus + "."
+          },
+          mentor: {
+            you: program + " team, mentor",
+            them: "Newer " + program + " team",
+            text: "You’d be matched with a newer " + program + " team looking for guidance on " + focus + "."
+          },
+          peer: {
+            you: program + " team, peer",
+            them: "Fellow " + program + " team",
+            text: "You’d be matched with a fellow " + program + " team to trade ideas and work on " + focus + " together."
+          }
+        }[role];
+        youEl.textContent = copy.you;
+        themEl.textContent = copy.them;
+        textEl.textContent = copy.text;
+      }
+
+      document.querySelectorAll(".picker input").forEach(function (el) {
+        el.addEventListener("change", update);
+      });
+      update();
+      document.getElementById("year").textContent = new Date().getFullYear();
+    })();
+  </script>
+</body>
+</html>
